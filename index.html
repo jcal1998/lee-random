@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nossa História de Amor</title>
+    <style>
+        :root {
+            --primary-color: #ff8c94; /* Rosa suave */
+            --secondary-color: #fde2e4; /* Rosa bem claro */
+            --text-color: #5c5c5c;
+            --bg-color: #fffafb;
+            --border-radius: 15px;
+            --font-family: 'Georgia', serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #game-container {
+            max-width: 600px;
+            width: 100%;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            text-align: center;
+            border: 1px solid var(--secondary-color);
+        }
+
+        #scene-title {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        #text-box {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            min-height: 150px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        #text-box p {
+            margin-bottom: 1em;
+        }
+
+        .dialogue {
+            font-style: italic;
+            padding-left: 15px;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        #choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .choice-btn, #next-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-family: var(--font-family);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: bold;
+        }
+
+        .choice-btn:hover, #next-btn:hover {
+            background-color: #ff6b78;
+            transform: translateY(-2px);
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h2 id="scene-title"></h2>
+        <div id="text-box"></div>
+        <div id="choices-container"></div>
+        <button id="next-btn">Começar</button>
+    </div>
+
+    <script>
+        // --- Personagens ---
+        const NOME_DELE = "Lee";
+        const NOME_DELA = "Jéssica";
+
+        // --- Elementos da UI ---
+        const sceneTitleElement = document.getElementById('scene-title');
+        const textBoxElement = document.getElementById('text-box');
+        const choicesContainerElement = document.getElementById('choices-container');
+        const nextBtn = document.getElementById('next-btn');
+
+        // --- Estado do Jogo ---
+        let currentSceneIndex = -1;
+
+        // --- Conteúdo da História ---
+        const story = [
+            {
+                title: "Capítulo 1: O Encontro na UFG",
+                text: [
+                    "Era um dia comum em 2015, na Universidade Federal de Goiás. O sol da tarde batia na calçada em frente ao Restaurante Universitário, o famoso RU.",
+                    `${NOME_DELE}, um rapaz asiático de 18 anos, estava saindo do almoço quando uma menina morena, da mesma idade, o abordou com um sorriso tímido e um livro de Cálculo na mão.`, 
+                    `<p class=\"dialogue\"><strong>${NOME_DELA}:</strong> \"Oi! Desculpa incomodar... Você é da engenharia, né? Será que você poderia me ajudar com essa lista de Cálculo? Eu tô quase chorando aqui.\"</p>`, 
+                    `${NOME_DELE}, surpreso e um pouco encantado, sorriu de volta. <p class=\"dialogue\"><strong>${NOME_DELE}:</strong> \"Claro! Senta aí. Essa parte é chata mesmo, mas a gente dá um jeito.\"</p>`, 
+                    "O que começou com uma ajudinha em matemática, virou uma longa conversa. E depois outra, e mais outra. Eles começaram a se encontrar todos os dias."
+                ]
+            },
+            {
+                title: "Capítulo 2: Cinema no Flamboyant",
+                text: [
+                    "Três meses se passaram. As conversas que começaram na UFG agora enchiam as janelas de chat do celular, com risadas e flertes inocentes.",
+                    "Ele a convidou para ir ao cinema. O coração batia forte. Finalmente, um encontro de verdade! Eles combinaram de se ver no Cinemark do Shopping Flamboyant.",
+                    "Quando ${NOME_DELE} chegou, uma surpresa: ${NOME_DELA} não estava sozinha. Ela tinha levado duas amigas junto."
+                ],
+                choices: [
+                    { text: "Pensar: 'Ah, não vai rolar nada...'", outcome: "Ele pensou consigo mesmo: 'Ok, com as amigas junto, acho que hoje não vai rolar nada'. Ele ficou um pouco desapontado, mas decidiu relaxar e curtir o filme e a companhia." },
+                    { text: "Pensar: 'Que legal, mais gente pra conversar!'", outcome: "Ele sorriu e pensou: 'Ótimo, mais gente pra conversar!'. Ele foi simpático com todas, fez piadas e garantiu que todo mundo se divertisse." }
+                ],
+                epilogue: "Apesar da torcida contra, no final da noite, enquanto se despediam, aconteceu. Um beijo roubado, rápido e cheio de significado. No dia seguinte, o pedido de namoro veio por mensagem, e ela aceitou com o coração aos pulos. Era o começo de tudo."
+            },
+            {
+                title: "Capítulo 3: Fugindo da Aula",
+                text: [
+                    "O começo do namoro foi mágico. Aquele frio na barriga constante, a troca de mensagens cheias de carinho e a vontade de estar junto o tempo todo.",
+                    "Muitas vezes, a saudade apertava no meio da tarde. A solução? Matar uma aulinha ou outra para se encontrarem atrás do Centro de Aulas C, o CAC da UFG.",
+                    "Era o esconderijo perfeito. Ali, entre uma árvore e outra, eles trocavam beijos, abraços e promessas, com o som das aulas acontecendo ao fundo, como se o mundo deles fosse só aquele pequeno pedaço de grama."
+                ]
+            },
+            {
+                title: "Capítulo 4: Banana Shopping",
+                text: [
+                    "Os encontros não precisavam ser grandiosos. Alguns dos melhores momentos aconteceram no Banana Shopping, um lugar simples e cheio de charme.",
+                    "Eram tardes de passeios de mãos dadas, lanchinhos baratos e muitas, muitas risadas. Cada cantinho daquele shopping se tornou um cenário para uma memória feliz.",
+                ],
+                choices: [
+                    { text: "Comer pão de queijo", outcome: `<p class=\"dialogue\"><strong>${NOME_DELA}:</strong> \"Amor, vamos dividir um pão de queijo?\"</p><p class=\"dialogue\"><strong>${NOME_DELE}:</strong> \"O melhor pão de queijo do mundo! Só se for agora.\"</p>Eles dividiam o pão de queijo quentinho, roubando pedaços um do outro.` },
+                    { text: "Tomar açaí", outcome: `<p class=\"dialogue\"><strong>${NOME_DELE}:</strong> \"Calor, né? Bora um açaí?\"</p><p class=\"dialogue\"><strong>${NOME_DELA}:</strong> \"Com leite em pó e morango! Por favorzinho!\"</p>Eles sentavam e dividiam um açaí gelado, sujando o canto da boca e rindo um do outro.` }
+                ],
+                epilogue: "Eram nesses pequenos momentos que o amor deles se fortalecia, na simplicidade de apenas estarem juntos."
+            },
+            {
+                title: "Capítulo 5: Mutirama e a Montanha-Russa",
+                text: [
+                    "Em um fim de semana ensolarado, decidiram ser turistas na própria cidade e foram ao Parque Mutirama.",
+                    "Ela, aventureira, correu direto para a montanha-russa, com os olhos brilhando de animação. <p class=\"dialogue\"><strong>${NOME_DELA}:</strong> \"Vamos, vamos, vamos! Vai ser divertido!\"</p>",
+                    "Ele, por outro lado, sentiu um calafrio. Altura e velocidade não eram seus melhores amigos. Mas como dizer não para aquele sorriso?",
+                    `<p class=\"dialogue\"><strong>${NOME_DELE}:</strong> \"Divertido? Isso parece uma máquina de tortura... Mas vamos lá, por você.\"</p>`,
+                    "A volta foi exatamente como o esperado: ela gritava de alegria, com os braços para o alto. Ele gritava de pânico, agarrado na trava de segurança. A foto tirada no final foi hilária: ela gargalhando, ele com uma cara de pavor impagável. Ele sobreviveu, e ganhou mais uma boa história para contar."
+                ]
+            },
+            {
+                title: "Capítulo 6: Chega o Bolt!",
+                text: [
+                    "A família estava prestes a crescer. Eles decidiram adotar um cachorrinho.",
+                    "E então, um pequeno furacão marrom e branco, da raça husky siberiano, entrou na vida deles. Seu nome: Bolt.",
+                    "A casa nunca mais foi a mesma. Eram pelos por toda parte, sapatos roídos e uma energia que não acabava nunca. Mas também era um amor incondicional, passeios no parque e muitas sessões de abraços no tapete da sala. Eles agora eram três."
+                ]
+            },
+            {
+                title: "Capítulo 7: Construindo a Vida",
+                text: [
+                    "Os anos foram passando e o relacionamento amadurecendo. A vida a dois foi sendo construída, tijolo por tijolo.",
+                    "Vieram os encontros em restaurantes novos, a primeira viagem para ver o mar, uma memória salgada e inesquecível.",
+                    "Houve também conversas sérias e medos compartilhados, como a ansiedade sobre uma possível gravidez não planejada. Nesses momentos, eles se apoiavam, mostrando que a parceria ia muito além da diversão.",
+                    "Compraram o primeiro carro, um símbolo de independência e de novas aventuras pela frente. E, finalmente, o passo mais importante: decidiram morar juntos. A busca pelo apartamento, a decoração, as primeiras noites no novo lar... cada momento era especial."
+                ]
+            },
+            {
+                title: "Capítulo 8: E agora, Luna!",
+                text: [
+                    "Com a casa nova e a rotina estabelecida, eles sentiram que faltava algo. Ou melhor, alguém.",
+                    "E assim, Luna chegou. Outra husky marrom e branca, tão bagunceira quanto Bolt. A casa ficou ainda mais cheia de pelos, latidos e alegria.",
+                    "Agora a família estava completa: ${NOME_DELE}, ${NOME_DELA}, Bolt e Luna. Uma pequena matilha, uma grande família."
+                ]
+            },
+            {
+                title: "Capítulo 9: O Pedido",
+                text: [
+                    "Numa noite qualquer, em casa, no conforto do lar que construíram juntos. Não havia restaurante chique nem público. Apenas eles, os cachorros dormindo no tapete e o amor que preenchia o ambiente.",
+                    "${NOME_DELE} estava visivelmente nervoso. Com a voz um pouco trêmula, ele começou a falar sobre a jornada deles, sobre cada risada, cada desafio e cada momento.",
+                    `Ele se ajoelhou ali mesmo, na sala de estar. <p class=\"dialogue\"><strong>${NOME_DELE}:</strong> \"Você me ensinou o que é o amor de verdade. Eu não consigo imaginar um único dia da minha vida sem você. Quer casar comigo?\"</p>`,
+                    "As lágrimas nos olhos dela foram a primeira resposta. A segunda foi um 'SIM!' sussurrado, cheio de emoção. Foi um pedido simples, íntimo e perfeito."
+                ]
+            },
+            {
+                title: "Capítulo 10: Pontes Aéreas",
+                text: [
+                    "A vida trouxe um novo desafio. ${NOME_DELE} recebeu uma proposta de emprego irrecusável: trabalhar na Google, em São Paulo.",
+                    "A distância parecia assustadora, mas o compromisso deles era maior. Ele se mudou, mas o coração ficou em Goiânia.",
+                    "Toda semana, ele pegava um avião. A ponte aérea São Paulo-Goiânia se tornou sua rotina. Ele voltava para continuar a faculdade, mas, principalmente, para ver sua noiva.",
+                    "As despedidas no aeroporto eram doídas, cheias de abraços apertados. Mas as chegadas eram pura felicidade. A saudade só serviu para mostrar o quanto o amor deles havia amadurecido e se tornado inabalável."
+                ]
+            },
+            {
+                title: "Capítulo Final: O Presente",
+                text: [
+                    "E aqui estamos, 9 anos depois daquele 'oi' na frente do RU.",
+                    "Nove anos de história, de crescimento, de parceria e de um amor que só ficou mais forte com o tempo.",
+                    "Este joguinho simples é o meu presente de aniversário para você, meu amor. Uma forma de registrar e celebrar cada passo da nossa jornada.",
+                    "É uma pequena homenagem à nossa história, que é a minha história favorita no mundo inteiro.",
+                    `<p class=\"dialogue\"><strong>${NOME_DELE}:</strong> \"Feliz aniversário, ${NOME_DELA}. Obrigado por esses 9 anos incríveis. Mal posso esperar por tudo que ainda vamos viver.\"</p>`,
+                    "A nossa história continua..."
+                ],
+                final: true
+            }
+        ];
+
+        function renderScene() {
+            const scene = story[currentSceneIndex];
+            
+            // Substituir nomes
+            const replaceNames = (text) => text.replace(/\${NOME_DELE}/g, NOME_DELE).replace(/\${NOME_DELA}/g, NOME_DELA);
+
+            sceneTitleElement.innerText = scene.title;
+            textBoxElement.innerHTML = scene.text.map(p => replaceNames(p)).join('');
+            
+            choicesContainerElement.innerHTML = '';
+            choicesContainerElement.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+
+            if (scene.choices) {
+                nextBtn.classList.add('hidden');
+                choicesContainerElement.classList.remove('hidden');
+                scene.choices.forEach(choice => {
+                    const button = document.createElement('button');
+                    button.innerText = replaceNames(choice.text);
+                    button.className = 'choice-btn';
+                    button.onclick = () => {
+                        textBoxElement.innerHTML += `<br><p><i>${replaceNames(choice.outcome)}</i></p>`;
+                        if(scene.epilogue) {
+                            textBoxElement.innerHTML += `<p>${replaceNames(scene.epilogue)}</p>`;
+                        }
+                        choicesContainerElement.classList.add('hidden');
+                        nextBtn.classList.remove('hidden');
+                    };
+                    choicesContainerElement.appendChild(button);
+                });
+            }
+            
+            if (scene.final) {
+                nextBtn.innerText = "Feliz Aniversário, meu amor!";
+            } else {
+                nextBtn.innerText = "Próximo";
+            }
+        }
+
+        function next() {
+            currentSceneIndex++;
+            if (currentSceneIndex < story.length) {
+                renderScene();
+            } else {
+                game-container.innerHTML = `<h2>A nossa história continua... ❤️</h2>`;
+            }
+        }
+
+        nextBtn.addEventListener('click', next);
+        
+        // Iniciar o jogo
+        next();
+
+    </script>
+</body>
+</html>
