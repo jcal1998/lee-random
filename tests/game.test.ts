@@ -3,7 +3,9 @@ import { Game } from "../src/game";
 import { buildStory, getNames } from "../src/story";
 
 const TEMPLATE = `
+  <ol id="progress"></ol>
   <div id="game-container">
+    <div id="scene-icon"></div>
     <h2 id="scene-title"></h2>
     <div id="text-box"></div>
     <div id="choices-container"></div>
@@ -18,7 +20,10 @@ const choiceButtons = () => [...document.querySelectorAll<HTMLButtonElement>(".c
 
 function setup(jolee = false, photos: string[] = []) {
   document.body.innerHTML = TEMPLATE;
+  document.body.className = "";
   const onRestart = vi.fn();
+  const onChoice = vi.fn();
+  const onEnd = vi.fn();
   const story = buildStory(jolee);
   const game = new Game({
     root: document.body,
@@ -26,9 +31,11 @@ function setup(jolee = false, photos: string[] = []) {
     names: getNames(jolee),
     photos,
     onRestart,
+    onChoice,
+    onEnd,
   });
   game.showInitialScreen();
-  return { game, story, onRestart };
+  return { game, story, onRestart, onChoice, onEnd };
 }
 
 describe("Game", () => {
@@ -89,5 +96,48 @@ describe("Game", () => {
     }
     const imgs = document.querySelectorAll("#final-photos img");
     expect(imgs).toHaveLength(2);
+  });
+
+  it("mostra os nomes do casal na tela inicial", () => {
+    setup(true);
+    expect($("#text-box")?.textContent).toContain("Lee & Joropopo");
+  });
+
+  it("acende uma estrela por capítulo lido e troca o ícone", () => {
+    const { story } = setup();
+    const stars = () => [...document.querySelectorAll("#progress .star")];
+    expect(stars()).toHaveLength(story.length);
+    expect(stars().filter((s) => s.classList.contains("lit"))).toHaveLength(0);
+
+    nextBtn().click();
+    nextBtn().click();
+    expect(stars().filter((s) => s.classList.contains("lit"))).toHaveLength(2);
+    expect(stars()[1].classList.contains("current")).toBe(true);
+    expect($("#progress")?.getAttribute("aria-label")).toBe(`Capítulo 2 de ${story.length}`);
+    expect($("#scene-icon")?.textContent).toBe(story[1].icon);
+  });
+
+  it("avança com a seta do teclado, mas não enquanto há escolhas", () => {
+    const { game, story } = setup();
+    const press = () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+    press();
+    expect(game.sceneIndex).toBe(0);
+
+    const idx = story.findIndex((s) => s.choices);
+    while (game.sceneIndex < idx) press();
+    press();
+    expect(game.sceneIndex).toBe(idx);
+  });
+
+  it("avisa quando escolhe e quando chega ao fim", () => {
+    const { story, onChoice, onEnd } = setup();
+    for (let i = 0; i <= story.length; i++) {
+      choiceButtons()[0]?.click();
+      nextBtn().click();
+    }
+    expect(onChoice).toHaveBeenCalled();
+    expect(onEnd).toHaveBeenCalledOnce();
+    expect(document.body.classList.contains("the-end")).toBe(true);
+    expect(document.querySelectorAll("#progress .star.lit")).toHaveLength(story.length);
   });
 });
