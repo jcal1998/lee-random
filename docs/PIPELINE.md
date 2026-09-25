@@ -37,13 +37,13 @@ flowchart LR
 | `e2e-tests`         | Dinâmica                      | `npx playwright install --with-deps chromium`, `npm run e2e`                                                       |
 | `build`             | Build                         | `npm run build`, salva `dist/` como artefato `site`                                                                |
 | `deploy-staging`    | Deploy, ambiente `staging`    | Publica o artefato no Surge e faz um smoke test com `curl`                                                         |
-| `deploy-production` | Deploy, ambiente `production` | `configure-pages`, `upload-pages-artifact`, `deploy-pages` e o mesmo smoke test em josecarloslee.online            |
+| `deploy-production` | Deploy, ambiente `production` | `configure-pages`, `upload-pages-artifact`, `deploy-pages` e o mesmo smoke test no endereço publicado              |
 
 O mesmo artefato do build é publicado nos dois ambientes, então o que foi testado em staging é exatamente o que vai para produção.
 
 ## Configuração única (feita no GitHub)
 
-1. **GitHub Pages pelo Actions**: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Na mesma página, em **Custom domain**, digite `josecarloslee.online`, salve e marque **Enforce HTTPS**. Com o deploy pelo Actions o arquivo `CNAME` não configura o domínio sozinho; sem esse passo o site vai para `jcal1998.github.io/lee-random/`, onde os arquivos JS e CSS não carregam e o smoke test de produção falha de propósito.
+1. **GitHub Pages pelo Actions**: Settings → Pages → Build and deployment → Source: **GitHub Actions**. Enquanto o domínio `josecarloslee.online` não estiver apontando para o GitHub, deixe **Custom domain** vazio: o site fica em `https://jcal1998.github.io/lee-random/` (o build usa caminhos relativos, então funciona nos dois endereços). Quando o domínio voltar, preencha **Custom domain** com `josecarloslee.online` e marque **Enforce HTTPS**.
 2. **Ambiente de produção com aprovação**: Settings → Environments → New environment → `production`. Marque **Required reviewers**, adicione você mesmo e, em _Deployment branches_, escolha **Selected branches** com `main`.
 3. **Ambiente de staging**: Settings → Environments → New environment → `staging` (sem regras). O GitHub também cria esse ambiente sozinho no primeiro deploy.
 4. **Staging público no Surge (opcional, recomendado)**:
@@ -58,4 +58,4 @@ O mesmo artefato do build é publicado nos dois ambientes, então o que foi test
 1. Abra um PR pequeno e mostre que só as verificações rodam.
 2. Faça o merge e abra a aba **Actions**: o pipeline chega ao staging e para em _Waiting for review_.
 3. Abra o link de staging, confira o site e clique em **Review deployments → Approve**.
-4. O deploy de produção roda e o link de josecarloslee.online aparece no resumo.
+4. O deploy de produção roda e o link do site aparece no resumo.
