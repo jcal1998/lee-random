@@ -5,9 +5,8 @@ O arquivo [`.github/workflows/ci-cd.yml`](../.github/workflows/ci-cd.yml) define
 ```mermaid
 flowchart LR
   subgraph Verificação estática
-    lint[Lint + tsc]
+    lint[Lint + tsc + npm audit]
     codeql[CodeQL]
-    dep[Dependency review<br/>só em PR]
   end
   subgraph Verificação dinâmica
     unit[Testes unitários]
@@ -22,24 +21,23 @@ flowchart LR
 
 ## Quando roda
 
-| Evento                          | O que acontece                                                                                             |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Pull request para `main`        | Só as verificações: lint, tsc, CodeQL, dependency review, testes unitários, E2E e build. Nada é publicado. |
-| Push em `main` (ou merge de PR) | Tudo acima, depois deploy em **staging** e, após aprovação, em **produção**.                               |
-| Manual (`workflow_dispatch`)    | Igual ao push em `main`, útil para demonstrar em aula.                                                     |
+| Evento                          | O que acontece                                                                                     |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Pull request para `main`        | Só as verificações: lint, tsc, npm audit, CodeQL, testes unitários, E2E e build. Nada é publicado. |
+| Push em `main` (ou merge de PR) | Tudo acima, depois deploy em **staging** e, após aprovação, em **produção**.                       |
+| Manual (`workflow_dispatch`)    | Igual ao push em `main`, útil para demonstrar em aula.                                             |
 
 ## Jobs e comandos
 
-| Job                 | Tipo                          | Comandos                                                                                        |
-| ------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------- |
-| `lint`              | Estática                      | `npm ci`, `npm run lint` (ESLint + Prettier), `npm run typecheck` (`tsc --noEmit`)              |
-| `codeql`            | Estática (segurança)          | `github/codeql-action` para JavaScript/TypeScript                                               |
-| `dependency-review` | Estática (dependências)       | `actions/dependency-review-action`, falha com vulnerabilidade alta                              |
-| `unit-tests`        | Dinâmica                      | `npm run test:coverage` (Vitest), salva a cobertura como artefato                               |
-| `e2e-tests`         | Dinâmica                      | `npx playwright install --with-deps chromium`, `npm run e2e`                                    |
-| `build`             | Build                         | `npm run build`, salva `dist/` como artefato `site`                                             |
-| `deploy-staging`    | Deploy, ambiente `staging`    | Publica o artefato no Surge e faz um smoke test com `curl`                                      |
-| `deploy-production` | Deploy, ambiente `production` | `configure-pages`, `upload-pages-artifact`, `deploy-pages` e smoke test em josecarloslee.online |
+| Job                 | Tipo                          | Comandos                                                                                                           |
+| ------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `lint`              | Estática                      | `npm ci`, `npm run lint` (ESLint + Prettier), `npm run typecheck` (`tsc --noEmit`), `npm audit --audit-level=high` |
+| `codeql`            | Estática (segurança)          | `github/codeql-action` para JavaScript/TypeScript                                                                  |
+| `unit-tests`        | Dinâmica                      | `npm run test:coverage` (Vitest), salva a cobertura como artefato                                                  |
+| `e2e-tests`         | Dinâmica                      | `npx playwright install --with-deps chromium`, `npm run e2e`                                                       |
+| `build`             | Build                         | `npm run build`, salva `dist/` como artefato `site`                                                                |
+| `deploy-staging`    | Deploy, ambiente `staging`    | Publica o artefato no Surge e faz um smoke test com `curl`                                                         |
+| `deploy-production` | Deploy, ambiente `production` | `configure-pages`, `upload-pages-artifact`, `deploy-pages` e smoke test em josecarloslee.online                    |
 
 O mesmo artefato do build é publicado nos dois ambientes, então o que foi testado em staging é exatamente o que vai para produção.
 
