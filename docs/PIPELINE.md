@@ -22,23 +22,23 @@ flowchart LR
 
 ## Quando roda
 
-| Evento | O que acontece |
-| --- | --- |
-| Pull request para `main` | Só as verificações: lint, tsc, CodeQL, dependency review, testes unitários, E2E e build. Nada é publicado. |
-| Push em `main` (ou merge de PR) | Tudo acima, depois deploy em **staging** e, após aprovação, em **produção**. |
-| Manual (`workflow_dispatch`) | Igual ao push em `main`, útil para demonstrar em aula. |
+| Evento                          | O que acontece                                                                                             |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Pull request para `main`        | Só as verificações: lint, tsc, CodeQL, dependency review, testes unitários, E2E e build. Nada é publicado. |
+| Push em `main` (ou merge de PR) | Tudo acima, depois deploy em **staging** e, após aprovação, em **produção**.                               |
+| Manual (`workflow_dispatch`)    | Igual ao push em `main`, útil para demonstrar em aula.                                                     |
 
 ## Jobs e comandos
 
-| Job | Tipo | Comandos |
-| --- | --- | --- |
-| `lint` | Estática | `npm ci`, `npm run lint` (ESLint), `npm run typecheck` (`tsc --noEmit`) |
-| `codeql` | Estática (segurança) | `github/codeql-action` para JavaScript/TypeScript |
-| `dependency-review` | Estática (dependências) | `actions/dependency-review-action`, falha com vulnerabilidade alta |
-| `unit-tests` | Dinâmica | `npm test` (Vitest), salva a cobertura como artefato |
-| `e2e-tests` | Dinâmica | `npx playwright install --with-deps chromium`, `npm run test:e2e` |
-| `build` | Build | `npm run build`, salva `dist/` como artefato `site` |
-| `deploy-staging` | Deploy, ambiente `staging` | Publica o artefato no Surge e faz um smoke test com `curl` |
+| Job                 | Tipo                          | Comandos                                                                                        |
+| ------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------- |
+| `lint`              | Estática                      | `npm ci`, `npm run lint` (ESLint + Prettier), `npm run typecheck` (`tsc --noEmit`)              |
+| `codeql`            | Estática (segurança)          | `github/codeql-action` para JavaScript/TypeScript                                               |
+| `dependency-review` | Estática (dependências)       | `actions/dependency-review-action`, falha com vulnerabilidade alta                              |
+| `unit-tests`        | Dinâmica                      | `npm run test:coverage` (Vitest), salva a cobertura como artefato                               |
+| `e2e-tests`         | Dinâmica                      | `npx playwright install --with-deps chromium`, `npm run e2e`                                    |
+| `build`             | Build                         | `npm run build`, salva `dist/` como artefato `site`                                             |
+| `deploy-staging`    | Deploy, ambiente `staging`    | Publica o artefato no Surge e faz um smoke test com `curl`                                      |
 | `deploy-production` | Deploy, ambiente `production` | `configure-pages`, `upload-pages-artifact`, `deploy-pages` e smoke test em josecarloslee.online |
 
 O mesmo artefato do build é publicado nos dois ambientes, então o que foi testado em staging é exatamente o que vai para produção.
@@ -46,7 +46,7 @@ O mesmo artefato do build é publicado nos dois ambientes, então o que foi test
 ## Configuração única (feita no GitHub)
 
 1. **GitHub Pages pelo Actions**: Settings → Pages → Build and deployment → Source: **GitHub Actions**. O domínio personalizado `josecarloslee.online` continua configurado na mesma página.
-2. **Ambiente de produção com aprovação**: Settings → Environments → New environment → `production`. Marque **Required reviewers**, adicione você mesmo e, em *Deployment branches*, escolha **Selected branches** com `main`.
+2. **Ambiente de produção com aprovação**: Settings → Environments → New environment → `production`. Marque **Required reviewers**, adicione você mesmo e, em _Deployment branches_, escolha **Selected branches** com `main`.
 3. **Ambiente de staging**: Settings → Environments → New environment → `staging` (sem regras). O GitHub também cria esse ambiente sozinho no primeiro deploy.
 4. **Staging público no Surge (opcional, recomendado)**:
    - No seu computador: `npx surge login` (cria a conta grátis) e depois `npx surge token`.
@@ -58,6 +58,6 @@ O mesmo artefato do build é publicado nos dois ambientes, então o que foi test
 ## Como demonstrar em aula
 
 1. Abra um PR pequeno e mostre que só as verificações rodam.
-2. Faça o merge e abra a aba **Actions**: o pipeline chega ao staging e para em *Waiting for review*.
+2. Faça o merge e abra a aba **Actions**: o pipeline chega ao staging e para em _Waiting for review_.
 3. Abra o link de staging, confira o site e clique em **Review deployments → Approve**.
 4. O deploy de produção roda e o link de josecarloslee.online aparece no resumo.
