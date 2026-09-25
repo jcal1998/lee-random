@@ -9,6 +9,8 @@ export interface GameOptions {
   onRestart?: () => void;
   /** Chamado quando o jogador escolhe uma opção, com o botão clicado. */
   onChoice?: (button: HTMLElement) => void;
+  /** Chamado a cada capítulo mostrado. */
+  onSceneChange?: (scene: Scene, index: number) => void;
   /** Chamado quando a tela final aparece. */
   onEnd?: () => void;
 }
@@ -42,6 +44,11 @@ export class Game {
 
   get sceneIndex(): number {
     return this.currentSceneIndex;
+  }
+
+  /** O capítulo na tela, ou `undefined` na tela inicial e na final. */
+  get currentScene(): Scene | undefined {
+    return this.options.story[this.currentSceneIndex];
   }
 
   private fill(text: string): string {
@@ -114,6 +121,7 @@ export class Game {
     this.nextBtn.innerText = scene.final ? "Feliz Aniversário, meu amor!" : "Próximo";
     this.renderProgress();
     this.animateCard();
+    this.options.onSceneChange?.(scene, this.currentSceneIndex);
   }
 
   private renderEnd(): void {

@@ -3,10 +3,28 @@ export interface Choice {
   outcome: string;
 }
 
+/** Animação de fundo de cada capítulo (veja src/scenery.ts). */
+export type Scenery =
+  | "estudos"
+  | "cinema"
+  | "segredo"
+  | "lanche"
+  | "montanha-russa"
+  | "bolt"
+  | "luna"
+  | "casa"
+  | "aviao"
+  | "fogos";
+
+/** Lugares do mapa das memórias (veja src/memory-map.ts). */
+export type Place = "ufg" | "flamboyant" | "banana" | "mutirama" | "casa" | "sao-paulo";
+
 export interface Scene {
   title: string;
   /** Emoji que ilustra o capítulo. */
   icon?: string;
+  scenery?: Scenery;
+  place?: Place;
   text: string[];
   choices?: Choice[];
   epilogue?: string;
@@ -46,6 +64,8 @@ export function replaceNames(text: string, names: Names): string {
 const capituloPontesAereas: Scene = {
   title: "Capítulo 9: Pontes Aéreas",
   icon: "✈️",
+  scenery: "aviao",
+  place: "sao-paulo",
   text: [
     "A vida trouxe um novo desafio. ${NOME_DELE} recebeu uma proposta de emprego irrecusável: trabalhar na Google, em São Paulo.",
     "A distância parecia assustadora, mas o compromisso deles era maior. Ele se mudou, mas o coração ficou em Goiânia.",
@@ -58,6 +78,8 @@ const capitulosIniciais: Scene[] = [
   {
     title: "Capítulo 1: O Encontro na UFG",
     icon: "📚",
+    scenery: "estudos",
+    place: "ufg",
     text: [
       "Era um dia comum em 2016, na Universidade Federal de Goiás. O sol da tarde batia na calçada em frente ao Restaurante Universitário, o famoso RU.",
       "${NOME_DELE} estava conversando com um grupo de amigas. Dias depois, uma menina morena, que fazia parte do grupo, o abordou pelo celular...",
@@ -69,6 +91,8 @@ const capitulosIniciais: Scene[] = [
   {
     title: "Capítulo 2: Cinema no Flamboyant",
     icon: "🎬",
+    scenery: "cinema",
+    place: "flamboyant",
     text: [
       "Três meses se passaram. As conversas que começaram na UFG agora enchiam as janelas de chat do celular, com risadas e flertes inocentes.",
       "Ele a convidou para ir ao cinema. O coração batia forte. Finalmente, um encontro de verdade! Eles combinaram de se ver no Cinemark do Shopping Flamboyant.",
@@ -92,6 +116,8 @@ const capitulosIniciais: Scene[] = [
   {
     title: "Capítulo 3: Fugindo da Aula",
     icon: "🤫",
+    scenery: "segredo",
+    place: "ufg",
     text: [
       "O começo do namoro foi mágico. Aquele frio na barriga constante, a troca de mensagens cheias de carinho e a vontade de estar junto o tempo todo.",
       "Muitas vezes, a saudade apertava no meio da tarde. A solução? Matar uma aulinha ou outra para se encontrarem atrás do Centro de Aulas C, o CAC da UFG.",
@@ -101,6 +127,8 @@ const capitulosIniciais: Scene[] = [
   {
     title: "Capítulo 4: Banana Shopping",
     icon: "🧀",
+    scenery: "lanche",
+    place: "banana",
     text: [
       "Os encontros não precisavam ser grandiosos. Alguns dos melhores momentos aconteceram no Banana Shopping, um lugar simples e acessível de ônibus.",
       "Eram tardes de passeios de mãos dadas, lanchinhos baratos e muitas, muitas risadas. Cada cantinho daquele shopping se tornou um cenário para uma memória feliz.",
@@ -123,6 +151,8 @@ const capitulosIniciais: Scene[] = [
   {
     title: "Capítulo 5: Mutirama e a Montanha-Russa",
     icon: "🎢",
+    scenery: "montanha-russa",
+    place: "mutirama",
     text: [
       "Em um fim de semana ensolarado, decidiram ser turistas na própria cidade e foram ao Parque Mutirama.",
       'Ela, aventureira, correu direto para a montanha-russa, com os olhos brilhando de animação. <p class="dialogue"><strong>${NOME_DELA}:</strong> "Vamos, vamos, vamos! Vai ser divertido!"</p>',
@@ -134,6 +164,8 @@ const capitulosIniciais: Scene[] = [
   {
     title: "Capítulo 6: Chega o Bolt! POTITO!",
     icon: "🐺",
+    scenery: "bolt",
+    place: "casa",
     text: [
       "A família estava prestes a crescer. Eles decidiram pegar um cachorrinho.",
       "E então, um pequeno furacão marrom e branco, da raça husky siberiano, entrou na vida deles. Seu nome: Bolt.",
@@ -143,6 +175,8 @@ const capitulosIniciais: Scene[] = [
   {
     title: "Capítulo 7: E agora, Luna! Luninha, tampinha!",
     icon: "🐾",
+    scenery: "luna",
+    place: "casa",
     text: [
       "Com a rotina estabelecida, eles sentiram que faltava algo. Ou melhor, outro alguém.",
       "E assim, Luna chegou. Outra husky marrom e branca, tão bagunceira quanto Bolt. Na verdade... muito pior! A casa ficou ainda mais cheia de pelos, latidos e alegria.",
@@ -152,6 +186,8 @@ const capitulosIniciais: Scene[] = [
   {
     title: "Capítulo 8: Construindo a Vida",
     icon: "🏡",
+    scenery: "casa",
+    place: "casa",
     text: [
       "Os anos foram passando e o relacionamento amadurecendo. A vida a dois foi sendo construída, tijolo por tijolo.",
       "Vieram os encontros em restaurantes novos, a primeira viagem para ver o mar, uma memória salgada e inesquecível.",
@@ -164,6 +200,7 @@ const capitulosIniciais: Scene[] = [
 const capituloFinal: Scene = {
   title: "Capítulo Final: O Presente",
   icon: "💞",
+  scenery: "fogos",
   text: [
     "E aqui estamos, 9 anos depois daquele 'oi' na frente do RU.",
     "Nove anos de história, de crescimento, de parceria e de um amor que só ficou mais forte com o tempo.",
