@@ -66,3 +66,22 @@ test("robots.txt e CNAME vão junto no build", async ({ request }) => {
   const cname = await request.get("/CNAME");
   expect(await cname.text()).toContain("josecarloslee.online");
 });
+
+test("mapa das memórias, animações e easter eggs", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#next-btn").click();
+
+  // Capítulo 1 tem animação de fundo.
+  await expect(page.locator("#scenery .sprite").first()).toBeAttached();
+
+  await page.getByRole("button", { name: "Abrir o mapa das memórias" }).click();
+  const map = page.locator("#memory-map");
+  await expect(map).toBeVisible();
+  await expect(map.locator(".pin.on")).toHaveCount(1);
+  await expect(map).toContainText("UFG");
+  await map.getByRole("button", { name: "Fechar" }).click();
+  await expect(map).toBeHidden();
+
+  await page.keyboard.type("luna");
+  await expect(page.locator(".husky-run")).toContainText("Luna!");
+});

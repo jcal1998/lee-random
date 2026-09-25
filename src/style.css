@@ -73,7 +73,7 @@ body {
 
 .stage {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   max-width: 640px;
   display: flex;
@@ -151,6 +151,8 @@ body {
 }
 
 #scene-icon {
+  cursor: pointer;
+  user-select: none;
   position: absolute;
   top: -30px;
   left: 50%;
@@ -466,6 +468,410 @@ button:focus-visible {
   }
 }
 
+#scene-icon.boop {
+  animation:
+    boop 0.4s ease,
+    bob 4s ease-in-out 0.4s infinite;
+}
+
+@keyframes boop {
+  40% {
+    transform: scale(1.25) rotate(-12deg);
+  }
+}
+
+/* --- Animações de fundo de cada capítulo --- */
+
+#scenery {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sprite {
+  position: absolute;
+  opacity: 0;
+  line-height: 1;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  filter: drop-shadow(0 0 8px rgba(255, 200, 230, 0.35));
+  will-change: transform, opacity;
+}
+
+.sprite.fall {
+  animation-name: sprite-fall;
+}
+
+.sprite.rise {
+  animation-name: sprite-rise;
+}
+
+.sprite.cross {
+  left: 0 !important;
+  animation-name: sprite-cross;
+}
+
+.sprite.cross-back {
+  left: 0 !important;
+  animation-name: sprite-cross-back;
+}
+
+.sprite.coaster {
+  left: 0 !important;
+  animation-name: sprite-coaster;
+  animation-timing-function: ease-in-out;
+}
+
+.sprite.paw {
+  animation-name: sprite-paw;
+  transform: rotate(90deg);
+}
+
+.sprite.burst {
+  animation-name: sprite-burst;
+  animation-timing-function: cubic-bezier(0.1, 0.7, 0.3, 1);
+}
+
+@keyframes sprite-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0);
+  }
+  10%,
+  80% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(115vh) rotate(200deg);
+  }
+}
+
+@keyframes sprite-rise {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  15%,
+  75% {
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate(18px, -55vh);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-10px, -115vh);
+  }
+}
+
+@keyframes sprite-cross {
+  0% {
+    opacity: 0.9;
+    transform: translateX(-15vw);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateX(115vw);
+  }
+}
+
+@keyframes sprite-cross-back {
+  0% {
+    opacity: 0.9;
+    transform: translateX(115vw) scaleX(-1);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateX(-15vw) scaleX(-1);
+  }
+}
+
+@keyframes sprite-coaster {
+  0% {
+    opacity: 0.9;
+    transform: translate(-15vw, 0) rotate(0);
+  }
+  25% {
+    transform: translate(20vw, -22vh) rotate(-18deg);
+  }
+  45% {
+    transform: translate(45vw, 6vh) rotate(22deg);
+  }
+  70% {
+    transform: translate(75vw, -16vh) rotate(-14deg);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translate(115vw, 0) rotate(0);
+  }
+}
+
+@keyframes sprite-paw {
+  0% {
+    opacity: 0;
+  }
+  4%,
+  35% {
+    opacity: 0.6;
+  }
+  55%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sprite-burst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3);
+  }
+  3% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1);
+  }
+}
+
+/* --- Botões de música e mapa --- */
+
+.toolbar {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 6;
+  display: flex;
+  gap: 10px;
+}
+
+.tool-btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 50%;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition:
+    transform 0.2s ease,
+    background 0.3s ease;
+}
+
+.tool-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 122, 162, 0.2);
+}
+
+.tool-btn[aria-pressed="true"] {
+  border-color: var(--rose);
+  box-shadow: 0 0 18px rgba(255, 122, 162, 0.45);
+}
+
+.tool-btn.ping {
+  animation: ping 1s ease 2;
+}
+
+@keyframes ping {
+  50% {
+    transform: scale(1.18);
+    box-shadow: 0 0 24px var(--gold);
+    border-color: var(--gold);
+  }
+}
+
+/* --- Mapa das memórias --- */
+
+#memory-map {
+  width: min(440px, calc(100% - 32px));
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+}
+
+#memory-map::backdrop {
+  background: rgba(8, 6, 24, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.map-card {
+  padding: 22px;
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, #241a52, #140f33);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.map-card h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.5rem;
+  margin: 0 0 14px;
+}
+
+.map-card svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.map-card .land {
+  fill: rgba(255, 255, 255, 0.04);
+  stroke: var(--glass-border);
+}
+
+.map-card .river {
+  fill: none;
+  stroke: rgba(120, 170, 255, 0.35);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.map-card .road {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 3;
+}
+
+.map-card .route {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 2;
+  stroke-dasharray: 5 6;
+  animation: route 1.2s linear infinite;
+}
+
+@keyframes route {
+  to {
+    stroke-dashoffset: -22;
+  }
+}
+
+.map-card .pin circle {
+  fill: rgba(255, 255, 255, 0.2);
+}
+
+.map-card .pin text {
+  fill: rgba(201, 193, 230, 0.5);
+  font-size: 11px;
+  font-family: var(--font-body);
+}
+
+.map-card .pin.on circle {
+  fill: var(--rose);
+  filter: drop-shadow(0 0 6px var(--rose));
+}
+
+.map-card .pin.on text {
+  fill: var(--text);
+  font-weight: 500;
+}
+
+.map-card .compass {
+  fill: rgba(201, 193, 230, 0.5);
+  font-size: 11px;
+}
+
+.map-note {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  margin: 12px 0 16px;
+}
+
+/* --- Easter eggs --- */
+
+.husky-run {
+  position: absolute;
+  bottom: 12vh;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: husky-run 3.2s linear forwards;
+}
+
+.husky {
+  font-size: 56px;
+  display: inline-block;
+  transform: scaleX(-1);
+  animation: gallop 0.28s ease-in-out infinite alternate;
+}
+
+.husky-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--gold);
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes husky-run {
+  from {
+    transform: translateX(-30vw);
+  }
+  to {
+    transform: translateX(110vw);
+  }
+}
+
+@keyframes gallop {
+  to {
+    transform: scaleX(-1) translateY(-10px) rotate(-6deg);
+  }
+}
+
+.shout {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(2.2rem, 10vw, 4.5rem);
+  white-space: nowrap;
+  color: var(--text);
+  text-shadow:
+    0 0 20px var(--rose),
+    0 0 50px rgba(255, 122, 162, 0.6);
+  animation: shout 2.2s ease forwards;
+}
+
+@keyframes shout {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4) rotate(-8deg);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1) rotate(3deg);
+  }
+  35% {
+    transform: translate(-50%, -50%) scale(1) rotate(0);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -70%) scale(1);
+  }
+}
+
 /* --- Celular --- */
 
 @media (max-width: 520px) {
@@ -483,6 +889,17 @@ button:focus-visible {
 
   .nav-btn {
     width: 100%;
+  }
+
+  .toolbar {
+    top: 10px;
+    right: 10px;
+  }
+
+  .tool-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 17px;
   }
 }
 

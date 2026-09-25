@@ -20,6 +20,28 @@
   <body>
     <canvas id="sky" aria-hidden="true"></canvas>
     <div class="aurora" aria-hidden="true"></div>
+    <div id="scenery" aria-hidden="true"></div>
+    <div class="toolbar">
+      <button
+        id="map-btn"
+        class="tool-btn"
+        type="button"
+        aria-label="Abrir o mapa das memórias"
+        title="Mapa das memórias"
+      >
+        🗺️
+      </button>
+      <button
+        id="music-btn"
+        class="tool-btn"
+        type="button"
+        aria-label="Ligar a música"
+        aria-pressed="false"
+        title="Música"
+      >
+        🔇
+      </button>
+    </div>
     <main class="stage">
       <ol id="progress"></ol>
       <div id="game-container">
@@ -31,9 +53,21 @@
           <button id="next-btn" class="nav-btn">Começar</button>
         </div>
       </div>
-      <p class="hint">Dica: use a seta → do teclado para avançar</p>
+      <p class="hint">
+        Dica: use a seta → do teclado para avançar. E tente digitar o nome dos cachorros 🐾
+      </p>
     </main>
     <div id="hearts" aria-hidden="true"></div>
+    <dialog id="memory-map" aria-labelledby="map-title">
+      <div class="map-card">
+        <h3 id="map-title">Mapa das memórias</h3>
+        <div id="map-body"></div>
+        <p class="map-note">
+          Os lugares aparecem conforme a história avança. (Mapa fora de escala.)
+        </p>
+        <button class="nav-btn" type="button" data-close>Fechar</button>
+      </div>
+    </dialog>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

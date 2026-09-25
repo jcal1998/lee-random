@@ -24,6 +24,7 @@ function setup(jolee = false, photos: string[] = []) {
   const onRestart = vi.fn();
   const onChoice = vi.fn();
   const onEnd = vi.fn();
+  const onSceneChange = vi.fn();
   const story = buildStory(jolee);
   const game = new Game({
     root: document.body,
@@ -33,9 +34,10 @@ function setup(jolee = false, photos: string[] = []) {
     onRestart,
     onChoice,
     onEnd,
+    onSceneChange,
   });
   game.showInitialScreen();
-  return { game, story, onRestart, onChoice, onEnd };
+  return { game, story, onRestart, onChoice, onEnd, onSceneChange };
 }
 
 describe("Game", () => {
@@ -139,5 +141,13 @@ describe("Game", () => {
     expect(onEnd).toHaveBeenCalledOnce();
     expect(document.body.classList.contains("the-end")).toBe(true);
     expect(document.querySelectorAll("#progress .star.lit")).toHaveLength(story.length);
+  });
+
+  it("avisa a cada capítulo e sabe qual está na tela", () => {
+    const { game, story, onSceneChange } = setup();
+    expect(game.currentScene).toBeUndefined();
+    nextBtn().click();
+    expect(onSceneChange).toHaveBeenLastCalledWith(story[0], 0);
+    expect(game.currentScene).toBe(story[0]);
   });
 });
