@@ -143,6 +143,9 @@ jobs:
       SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
       SURGE_DOMAIN: ${{ vars.SURGE_DOMAIN || 'lee-random-staging.surge.sh' }}
     steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/scripts
       - uses: actions/download-artifact@v8
         with:
           name: site
@@ -160,13 +163,7 @@ jobs:
             echo "url=http://localhost:4173" >> "$GITHUB_OUTPUT"
           fi
       - name: Smoke test staging
-        run: |
-          for i in $(seq 1 10); do
-            if curl -fsSL "${{ steps.deploy.outputs.url }}/" -o page.html; then break; fi
-            sleep 3
-          done
-          grep -qi "<title>" page.html
-          echo "Staging answered at ${{ steps.deploy.outputs.url }}"
+        run: .github/scripts/smoke-test.sh "${{ steps.deploy.outputs.url }}"
 
   # ---------------------------------------------------------------
   # 5. Deploy to production (environment 2, needs manual approval)
@@ -176,12 +173,16 @@ jobs:
     needs: deploy-staging
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
       name: production
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/scripts
       - uses: actions/download-artifact@v8
         with:
           name: site
@@ -194,13 +195,4 @@ jobs:
         id: deploy
         uses: actions/deploy-pages@v5
       - name: Smoke test production
-        run: |
-          for i in $(seq 1 10); do
-            if curl -fsSL "${{ steps.deploy.outputs.page_url }}" -o page.html && grep -qi "<title>" page.html; then
-              echo "Production is live at ${{ steps.deploy.outputs.page_url }}"
-              exit 0
-            fi
-            sleep 6
-          done
-          echo "::error::Production did not answer with the site"
-          exit 1
+        run: .github/scripts/smoke-test.sh "${{ steps.deploy.outputs.page_url }}"
